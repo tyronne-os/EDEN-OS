@@ -21,6 +21,7 @@ from eden_os.genesis.portrait_engine import PortraitEngine
 from eden_os.genesis.eden_protocol_validator import EdenProtocolValidator
 from eden_os.genesis.latent_encoder import LatentEncoder
 from eden_os.genesis.preload_cache import PreloadCache
+from eden_os.genesis.skin_realism_agent import SkinRealismAgent
 
 
 class GenesisEngine(IGenesisEngine):
@@ -38,6 +39,7 @@ class GenesisEngine(IGenesisEngine):
         self._validator = EdenProtocolValidator()
         self._encoder = LatentEncoder(latent_dim=latent_dim)
         self._cache = PreloadCache(num_seeds=num_idle_seeds)
+        self.skin_agent = SkinRealismAgent()
         logger.info("GenesisEngine initialised (latent_dim={}, idle_seeds={})",
                     latent_dim, num_idle_seeds)
 
@@ -113,4 +115,4 @@ class GenesisEngine(IGenesisEngine):
         logger.info("GenesisEngine closed")
 
 
-__all__ = ["GenesisEngine"]
+__all__ = ["GenesisEngine", "SkinRealismAgent"]
