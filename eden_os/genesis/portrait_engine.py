@@ -30,12 +30,16 @@ class PortraitEngine:
     def _ensure_initialized(self) -> None:
         if self._initialized:
             return
-        if mp is not None:
-            self._mp_face_detection = mp.solutions.face_detection
-            self._detector = self._mp_face_detection.FaceDetection(
-                model_selection=1,  # full-range model (better for varied distances)
-                min_detection_confidence=0.5,
-            )
+        if mp is not None and hasattr(mp, "solutions"):
+            try:
+                self._mp_face_detection = mp.solutions.face_detection
+                self._detector = self._mp_face_detection.FaceDetection(
+                    model_selection=1,
+                    min_detection_confidence=0.5,
+                )
+            except (AttributeError, Exception) as e:
+                logger.warning(f"MediaPipe solutions unavailable ({e}) — using Haar cascade")
+                self._detector = None
         self._initialized = True
 
     # ------------------------------------------------------------------

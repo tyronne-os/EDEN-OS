@@ -434,7 +434,8 @@ class SkinRealismAgent:
         if self.profile.oiliness > 0.3:
             t_zone = np.zeros((h, w), dtype=np.float32)
             cv2.ellipse(t_zone, (w // 2, int(h * 0.3)),
-                        (w // 6, h // 4), 0, 0, 360, self.profile.oiliness * 0.3, -1)
+                        (w // 6, h // 4), 0, 0, 360,
+                        float(self.profile.oiliness * 0.3), -1)
             t_zone = cv2.GaussianBlur(t_zone, (21, 21), 0)
             highlight_map += t_zone
 
