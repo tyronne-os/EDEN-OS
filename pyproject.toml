@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eden-os"
+version = "1.0.0"
+description = "EDEN OS — 4D Bi-Directional Conversational Avatar Pipeline"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = ["eden_os*"]

@@ -1,0 +1,19 @@
+# EDEN OS — L4 Cloud GPU Profile (24GB VRAM, HuggingFace Spaces)
+hardware:
+  name: "L4 Cloud GPU"
+  gpu: "L4"
+  vram_gb: 24
+
+pipeline:
+  target_fps: 30
+  max_latency_ms: 1500
+
+animator:
+  engine: "liveportrait"
+  target_fps: 30
+
+voice:
+  tts_primary: "kokoro"
+
+brain:
+  primary: "anthropic"

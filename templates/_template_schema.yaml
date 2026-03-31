@@ -1,0 +1,29 @@
+# EDEN OS — Agent Template Schema
+# All templates must follow this structure
+
+schema:
+  agent:
+    name: string          # Agent display name
+    role: string          # Agent role description
+    persona:
+      tone: string        # warm, confident, empathetic, motivating, conversational
+      pace: string        # slow, moderate, energetic, relaxed
+      formality: string   # formal, professional, casual_professional, casual
+      emotional_baseline:
+        joy: float        # 0.0-1.0
+        confidence: float
+        warmth: float
+        urgency: float
+        sadness: float    # optional, default 0.0
+    system_prompt: string # Full system prompt (supports multiline)
+    voice:
+      engine: string      # kokoro, cosyvoice2, styletts2
+      reference_audio: string  # optional path to reference audio for cloning
+      speed: float        # 0.5-1.5
+      emotion_override: object  # optional emotion overrides
+    appearance:
+      portrait_prompt: string  # optional, for generating appearance
+      style: string       # photorealistic, stylized
+      eden_protocol: string  # strict, standard, relaxed
+    knowledge_base:       # optional list of knowledge file paths
+      - string

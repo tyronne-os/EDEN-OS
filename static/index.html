@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDEN OS — Studio</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #080503;
+    --gold: #C5B358;
+    --gold-dim: #8a7d3e;
+    --text: #F5F0E8;
+    --text-dim: #9a9590;
+    --panel: #111110;
+    --panel-border: #2a2520;
+    --danger: #e74c3c;
+    --success: #27ae60;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .header .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Main Layout */
+  .main {
+    display: grid;
+    grid-template-columns: 280px 1fr 360px;
+    height: calc(100vh - 53px);
+  }
+
+  /* Left Panel — Settings */
+  .panel-left {
+    background: var(--panel);
+    border-right: 1px solid var(--panel-border);
+    padding: 20px 16px;
+    overflow-y: auto;
+  }
+  .panel-section {
+    margin-bottom: 24px;
+  }
+  .panel-section h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .slider-group {
+    margin-bottom: 16px;
+  }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .slider-value { color: var(--gold); }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--panel-border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .btn:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+  .btn-gold:hover { background: var(--gold-dim); }
+
+  /* Voice Design Row */
+  .voice-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .voice-btn {
+    aspect-ratio: 1;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .voice-btn:hover, .voice-btn.active { border-color: var(--gold); }
+  .voice-btn svg { width: 20px; height: 20px; stroke: var(--text-dim); fill: none; }
+  .voice-btn:hover svg, .voice-btn.active svg { stroke: var(--gold); }
+
+  /* Center Panel — Pipeline */
+  .panel-center {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+  }
+  .pipeline-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .connectivity {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 16px;
+    flex-shrink: 0;
+  }
+  .connectivity h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .conn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .conn-status {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .conn-status.connected { background: rgba(39,174,96,0.2); color: var(--success); }
+  .conn-status.disconnected { background: rgba(231,76,60,0.2); color: var(--danger); }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+  }
+  .metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .metric-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* Action Buttons Row */
+  .actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .actions-row .full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* Right Panel — Avatar */
+  .panel-right {
+    background: var(--panel);
+    border-left: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+  }
+  .avatar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .eden-pill {
+    background: var(--gold);
+    color: var(--bg);
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .avatar-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: #0a0806;
+  }
+  .avatar-display canvas {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
+  }
+  .avatar-placeholder {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1a1510 0%, var(--bg) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: var(--gold-dim);
+    border: 2px solid var(--panel-border);
+  }
+  .avatar-state {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  /* Context Editor */
+  .context-editor {
+    padding: 12px 16px;
+    border-top: 1px solid var(--panel-border);
+  }
+  .context-editor textarea {
+    width: 100%;
+    height: 80px;
+    background: var(--bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 8px;
+    font-size: 12px;
+    font-family: inherit;
+    border-radius: 4px;
+    resize: none;
+  }
+  .context-editor textarea:focus { outline: none; border-color: var(--gold); }
+
+  /* Knowledge Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 24px;
+  }
+  .modal h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .input-group {
+    margin-bottom: 16px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .input-row input, .input-row textarea {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: inherit;
+    border-radius: 4px;
+  }
+  .input-row input:focus, .input-row textarea:focus { outline: none; border-color: var(--gold); }
+  .modal textarea { height: 80px; resize: none; width: 100%; }
+  .compliance-badge {
+    display: inline-block;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(197,179,88,0.15);
+    color: var(--gold);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>EDEN OS</h1>
+  <div class="status">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">System Ready</span>
+  </div>
+</div>
+
+<!-- Main 3-Column Layout -->
+<div class="main">
+
+  <!-- LEFT: Settings Panel -->
+  <div class="panel-left">
+    <div class="panel-section">
+      <h3>Behavioral Controls</h3>
+
+      <div class="slider-group">
+        <div class="slider-label"><span>Consistency</span><span class="slider-value" id="val-consistency">70%</span></div>
+        <input type="range" min="0" max="100" value="70" id="slider-consistency" data-key="consistency">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Latency</span><span class="slider-value" id="val-latency">100%</span></div>
+        <input type="range" min="0" max="100" value="100" id="slider-latency" data-key="latency">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Expressiveness</span><span class="slider-value" id="val-expressiveness">60%</span></div>
+        <input type="range" min="0" max="100" value="60" id="slider-expressiveness" data-key="expressiveness">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Voice Tone</span><span class="slider-value" id="val-voice_tone">85%</span></div>
+        <input type="range" min="0" max="100" value="85" id="slider-voice_tone" data-key="voice_tone">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Eye Contact</span><span class="slider-value" id="val-eye_contact">50%</span></div>
+        <input type="range" min="0" max="100" value="50" id="slider-eye_contact" data-key="eye_contact">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Flirtation</span><span class="slider-value" id="val-flirtation">15%</span></div>
+        <input type="range" min="0" max="100" value="15" id="slider-flirtation" data-key="flirtation">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <button class="btn btn-gold" onclick="openBackendSettings()">Backend Settings</button>
+    </div>
+
+    <div class="panel-section">
+      <h3>Voice Design</h3>
+      <div class="voice-grid" id="voiceGrid"></div>
+    </div>
+  </div>
+
+  <!-- CENTER: Pipeline + Metrics -->
+  <div class="panel-center">
+    <div class="pipeline-controls">
+      <button class="btn" onclick="swapModel()">Model to Model</button>
+      <button class="btn" onclick="newPipeline()">New Pipeline</button>
+    </div>
+
+    <div class="connectivity">
+      <h3>Connectivity</h3>
+      <div class="conn-row">
+        <span>WebSocket</span>
+        <span class="conn-status" id="wsStatus">Disconnected</span>
+      </div>
+      <div class="conn-row">
+        <span>WebRTC</span>
+        <span class="conn-status disconnected">Unavailable</span>
+      </div>
+      <div class="conn-row">
+        <span>GPU</span>
+        <span class="conn-status" id="gpuStatus">Detecting...</span>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" id="metricLatency">--</div>
+        <div class="metric-label">Latency (ms)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metricFps">--</div>
+        <div class="metric-label">FPS</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metricVram">--</div>
+        <div class="metric-label">VRAM (GB)</div>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn" onclick="buildVoiceAgent()">Build Voice Agent</button>
+      <button class="btn" onclick="openWardrobe()">Hair & Wardrobe</button>
+      <button class="btn btn-gold full-width" onclick="openVoiceConfig()">THE VOICE</button>
+      <button class="btn btn-gold full-width" id="btnInitiate" onclick="initiateConversation()">Initiate Conversation</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Avatar + Context -->
+  <div class="panel-right">
+    <div class="avatar-header">
+      <span style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">Avatar Preview</span>
+      <span class="eden-pill" onclick="selectAvatar()">EDEN</span>
+    </div>
+    <div class="avatar-display">
+      <canvas id="avatarCanvas" width="512" height="512"></canvas>
+      <div class="avatar-placeholder" id="avatarPlaceholder">EVE</div>
+      <div class="avatar-state" id="avatarState">IDLE</div>
+    </div>
+    <div class="context-editor">
+      <textarea id="contextEditor" placeholder="Custom Instructions & Context Reference...&#10;&#10;Define EVE's persona, knowledge domain, conversation style..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn" style="flex:1" onclick="applyMemory()">Apply to EVE's Memory</button>
+        <button class="btn" style="flex:1" onclick="openKnowledgeModal()">Knowledge</button>
+      </div>
+      <span class="compliance-badge">Compliance Ready</span>
+    </div>
+  </div>
+</div>
+
+<!-- Knowledge Injection Modal -->
+<div class="modal-overlay" id="knowledgeModal">
+  <div class="modal">
+    <h2>Knowledge Injection</h2>
+
+    <div class="input-group">
+      <label>YouTube URL</label>
+      <div class="input-row">
+        <input type="text" id="youtubeUrl" placeholder="https://youtube.com/watch?v=...">
+        <button class="btn" style="width:auto;margin:0" onclick="ingestYoutube()">Ingest</button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Audiobook / Media</label>
+      <div class="input-row">
+        <input type="file" id="audiobookFile" accept="audio/*" style="font-size:11px">
+        <button class="btn" style="width:auto;margin:0" onclick="ingestAudiobook()">Upload</button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Research / Prompt URL</label>
+      <div class="input-row">
+        <input type="text" id="researchUrl" placeholder="https://arxiv.org/abs/...">
+        <button class="btn" style="width:auto;margin:0" onclick="ingestUrl()">Fetch</button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Natural Language Prompt</label>
+      <textarea id="nlPrompt" placeholder="Create a conversational agent with..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" style="flex:1" onclick="sendPrompt()">Send Prompt</button>
+      </div>
+    </div>
+
+    <button class="btn btn-gold" style="margin-top:12px" onclick="analyzeMedia()">Analyze Media Sources</button>
+    <button class="btn" style="margin-top:8px" onclick="closeKnowledgeModal()">Close</button>
+
+    <div id="knowledgeStatus" style="margin-top:12px;font-size:11px;color:var(--text-dim)"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// EDEN OS — Studio Frontend JavaScript
+// ═══════════════════════════════════════
+
+const API_BASE = window.location.origin + '/api/v1';
+let sessionId = null;
+let ws = null;
+let isConversing = false;
+let mediaRecorder = null;
+const avatarCanvas = document.getElementById('avatarCanvas');
+const ctx = avatarCanvas.getContext('2d');
+
+// ── Sliders ──
+document.querySelectorAll('input[type="range"]').forEach(slider => {
+  slider.addEventListener('input', (e) => {
+    const key = e.target.dataset.key;
+    const val = e.target.value;
+    document.getElementById('val-' + key).textContent = val + '%';
+    if (sessionId) updateSettings({ [key]: val / 100 });
+  });
+});
+
+async function updateSettings(settings) {
+  try {
+    await fetch(`${API_BASE}/sessions/${sessionId}/settings`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(settings)
+    });
+  } catch (e) { console.error('Settings update failed:', e); }
+}
+
+// ── Voice Grid ──
+const voiceGrid = document.getElementById('voiceGrid');
+for (let i = 0; i < 8; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'voice-btn' + (i === 0 ? ' active' : '');
+  btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 ${12+Math.sin(i)*3} Q6 ${8+i%3} 9 12 T15 12 T21 ${12-Math.cos(i)*3}" stroke-width="2"/></svg>`;
+  btn.onclick = () => {
+    document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  voiceGrid.appendChild(btn);
+}
+
+// ── Initiate Conversation ──
+async function initiateConversation() {
+  const btn = document.getElementById('btnInitiate');
+  if (isConversing) {
+    endConversation();
+    return;
+  }
+
+  btn.textContent = 'Connecting...';
+  try {
+    // Create session
+    const res = await fetch(`${API_BASE}/sessions`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ template: 'default' })
+    });
+    const data = await res.json();
+    sessionId = data.session_id;
+
+    // Connect WebSocket
+    const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${wsProtocol}//${location.host}/api/v1/sessions/${sessionId}/stream`);
+
+    ws.onopen = () => {
+      isConversing = true;
+      btn.textContent = 'End Conversation';
+      updateStatus('connected', 'Conversing');
+      document.getElementById('avatarState').textContent = 'LISTENING';
+      startMicCapture();
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      handleWsMessage(msg);
+    };
+
+    ws.onclose = () => {
+      updateStatus('disconnected', 'Disconnected');
+      isConversing = false;
+      btn.textContent = 'Initiate Conversation';
+    };
+
+    ws.onerror = (e) => {
+      console.error('WebSocket error:', e);
+      updateStatus('disconnected', 'Error');
+    };
+
+  } catch (e) {
+    console.error('Failed to initiate:', e);
+    btn.textContent = 'Initiate Conversation';
+    updateStatus('disconnected', 'Connection Failed');
+  }
+}
+
+function endConversation() {
+  if (ws) ws.close();
+  if (sessionId) fetch(`${API_BASE}/sessions/${sessionId}`, {method: 'DELETE'}).catch(() => {});
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  sessionId = null;
+  isConversing = false;
+  document.getElementById('btnInitiate').textContent = 'Initiate Conversation';
+  document.getElementById('avatarState').textContent = 'IDLE';
+  updateStatus('ready', 'System Ready');
+}
+
+// ── WebSocket Message Handler ──
+function handleWsMessage(msg) {
+  switch (msg.type) {
+    case 'video_frame':
+      renderAvatarFrame(msg.data);
+      break;
+    case 'audio':
+      playAudioChunk(msg.data);
+      break;
+    case 'transcript':
+      console.log('EVE:', msg.text);
+      break;
+    case 'state':
+      document.getElementById('avatarState').textContent = msg.value.toUpperCase();
+      break;
+    case 'metrics':
+      updateMetrics(msg);
+      break;
+  }
+}
+
+// ── Avatar Rendering ──
+function renderAvatarFrame(base64Data) {
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, avatarCanvas.width, avatarCanvas.height);
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+    avatarCanvas.style.display = 'block';
+  };
+  img.src = 'data:image/jpeg;base64,' + base64Data;
+}
+
+// ── Audio Playback ──
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playAudioChunk(base64Data) {
+  const raw = atob(base64Data);
+  const arr = new Float32Array(raw.length / 4);
+  const dv = new DataView(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i++) dv.setUint8(i, raw.charCodeAt(i));
+  for (let i = 0; i < arr.length; i++) arr[i] = dv.getFloat32(i * 4, true);
+
+  const buffer = audioCtx.createBuffer(1, arr.length, 22050);
+  buffer.copyToChannel(arr, 0);
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioCtx.destination);
+  source.start();
+}
+
+// ── Microphone Capture ──
+async function startMicCapture() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+    mediaRecorder.ondataavailable = async (e) => {
+      if (ws && ws.readyState === WebSocket.OPEN && e.data.size > 0) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result.split(',')[1];
+          ws.send(JSON.stringify({ type: 'audio', data: base64 }));
+        };
+        reader.readAsDataURL(e.data);
+      }
+    };
+    mediaRecorder.start(250); // send chunks every 250ms
+  } catch (e) {
+    console.error('Mic access denied:', e);
+  }
+}
+
+// ── Status Updates ──
+function updateStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  const wsEl = document.getElementById('wsStatus');
+  document.getElementById('statusText').textContent = text;
+
+  if (state === 'connected') {
+    dot.style.background = 'var(--success)';
+    wsEl.textContent = 'Connected';
+    wsEl.className = 'conn-status connected';
+  } else {
+    dot.style.background = state === 'ready' ? 'var(--gold)' : 'var(--danger)';
+    wsEl.textContent = 'Disconnected';
+    wsEl.className = 'conn-status disconnected';
+  }
+}
+
+function updateMetrics(m) {
+  if (m.latency) document.getElementById('metricLatency').textContent = Math.round(m.latency);
+  if (m.fps) document.getElementById('metricFps').textContent = Math.round(m.fps);
+  if (m.vram) document.getElementById('metricVram').textContent = m.vram.toFixed(1);
+}
+
+// ── Knowledge Modal ──
+function openKnowledgeModal() { document.getElementById('knowledgeModal').classList.add('active'); }
+function closeKnowledgeModal() { document.getElementById('knowledgeModal').classList.remove('active'); }
+
+async function ingestYoutube() {
+  const url = document.getElementById('youtubeUrl').value;
+  if (!url) return;
+  setKnowledgeStatus('Ingesting YouTube...');
+  try {
+    const res = await fetch(`${API_BASE}/knowledge/ingest`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ type: 'youtube', url })
+    });
+    const data = await res.json();
+    setKnowledgeStatus(`YouTube ingested: ${data.chunks_created || 0} chunks created`);
+  } catch (e) { setKnowledgeStatus('Error: ' + e.message); }
+}
+
+async function ingestUrl() {
+  const url = document.getElementById('researchUrl').value;
+  if (!url) return;
+  setKnowledgeStatus('Fetching URL...');
+  try {
+    const res = await fetch(`${API_BASE}/knowledge/ingest`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ type: 'url', url })
+    });
+    const data = await res.json();
+    setKnowledgeStatus(`URL ingested: ${data.chunks_created || 0} chunks created`);
+  } catch (e) { setKnowledgeStatus('Error: ' + e.message); }
+}
+
+async function ingestAudiobook() { setKnowledgeStatus('Audiobook upload: coming in Phase 1.1'); }
+async function sendPrompt() {
+  const prompt = document.getElementById('nlPrompt').value;
+  if (!prompt) return;
+  setKnowledgeStatus('Prompt sent to Conductor');
+}
+
+async function analyzeMedia() {
+  setKnowledgeStatus('Analyzing all media sources...');
+  try {
+    const res = await fetch(`${API_BASE}/knowledge/analyze`, { method: 'POST' });
+    const data = await res.json();
+    setKnowledgeStatus(`Analysis complete: ${data.total_chunks || 0} total chunks across ${Object.keys(data.sources || {}).length} sources`);
+  } catch (e) { setKnowledgeStatus('Error: ' + e.message); }
+}
+
+function setKnowledgeStatus(text) {
+  document.getElementById('knowledgeStatus').textContent = text;
+}
+
+// ── Placeholder functions ──
+function applyMemory() {
+  const ctx = document.getElementById('contextEditor').value;
+  if (sessionId && ctx) {
+    fetch(`${API_BASE}/sessions/${sessionId}/settings`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ system_prompt: ctx })
+    }).catch(() => {});
+  }
+  alert('Applied to EVE\'s Memory');
+}
+function openBackendSettings() { alert('Backend Settings: GPU profile, model swap, API keys'); }
+function swapModel() { alert('Model to Model: swap animation/TTS engine mid-session'); }
+function newPipeline() { alert('Pipeline Builder: drag-and-drop model nodes (Phase 1.1)'); }
+function buildVoiceAgent() { alert('Voice Agent Wizard: template > persona > voice > deploy'); }
+function openWardrobe() { alert('Hair & Wardrobe: FLUX inpainting with IP-Adapter identity lock'); }
+function openVoiceConfig() { alert('THE VOICE: cloning upload, emotion sliders, speed, language'); }
+function selectAvatar() { alert('Avatar selector: swap between different avatar models'); }
+
+// ── Health Check on Load ──
+(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/health`);
+    const data = await res.json();
+    updateStatus('ready', `System Ready — ${data.hardware_profile || 'CPU'}`);
+    document.getElementById('gpuStatus').textContent = data.gpu || 'CPU';
+    document.getElementById('gpuStatus').className = 'conn-status ' + (data.gpu_available ? 'connected' : 'disconnected');
+  } catch (e) {
+    updateStatus('disconnected', 'API Unreachable');
+  }
+  // Hide canvas, show placeholder initially
+  avatarCanvas.style.display = 'none';
+})();
+</script>
+</body>
+</html>

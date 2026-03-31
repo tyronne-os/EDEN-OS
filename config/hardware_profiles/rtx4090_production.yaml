@@ -1,0 +1,19 @@
+# EDEN OS — RTX 4090 Production Profile (24GB VRAM)
+hardware:
+  name: "RTX 4090 Production"
+  gpu: "RTX 4090"
+  vram_gb: 24
+
+pipeline:
+  target_fps: 60
+  max_latency_ms: 1300
+
+animator:
+  engine: "liveportrait"
+  target_fps: 60
+
+voice:
+  tts_primary: "cosyvoice2"
+
+brain:
+  primary: "anthropic"

@@ -1,0 +1,62 @@
+# EDEN OS — Default Configuration
+# Auto-detected hardware profile overrides these values
+
+eden_os:
+  version: "1.0.0"
+  codename: "OWN THE SCIENCE"
+
+server:
+  host: "0.0.0.0"
+  port: 7860
+  ws_max_size: 16777216  # 16MB
+
+pipeline:
+  target_fps: 30
+  max_latency_ms: 1500
+  eden_protocol_threshold: 0.3
+
+defaults:
+  consistency: 0.7
+  latency: 1.0
+  expressiveness: 0.6
+  voice_tone: 0.85
+  eye_contact: 0.5
+  flirtation: 0.15
+
+brain:
+  primary: "anthropic"
+  model: "claude-sonnet-4-20250514"
+  fallback: "local"
+  local_model: "Qwen/Qwen3-8B-GGUF"
+  max_tokens: 1024
+  temperature: 0.7
+  memory_window: 20
+
+voice:
+  asr_model: "openai/whisper-large-v3-turbo"
+  asr_fallback: "base"
+  tts_primary: "kokoro"
+  tts_fallback: "silent"
+  sample_rate: 16000
+  vad_threshold: 0.02
+
+animator:
+  engine: "liveportrait"
+  fallback: "procedural"
+  target_fps: 30
+  idle_blink_interval: [3.0, 7.0]
+  breath_cycle_seconds: 4.0
+
+genesis:
+  face_detection: "mediapipe"
+  portrait_size: 512
+  eden_protocol_threshold: 0.3
+
+scholar:
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  vector_store: "chromadb"
+  chunk_size: 500
+  chunk_overlap: 50
+  chromadb_path: "data/chromadb"
+
+models_cache: "models_cache"

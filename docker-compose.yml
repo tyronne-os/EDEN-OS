@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  eden-os:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HF_TOKEN=${HF_TOKEN}
+      - EDEN_HARDWARE_PROFILE=auto
+      - EDEN_LOG_LEVEL=INFO
+    volumes:
+      - ./models_cache:/app/models_cache
+      - ./templates:/app/templates
+      - ./data:/app/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

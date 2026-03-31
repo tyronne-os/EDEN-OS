@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+models_cache/
+data/
+*.pth
+*.onnx
+*.safetensors
+*.bin

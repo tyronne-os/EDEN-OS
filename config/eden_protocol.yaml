@@ -1,0 +1,25 @@
+# EDEN OS — Eden Protocol Configuration
+# Skin texture fidelity validation thresholds
+
+eden_protocol:
+  # Maximum allowed standard deviation between generated and reference
+  threshold: 0.3
+
+  # Gabor filter bank parameters
+  gabor:
+    orientations: [0, 45, 90, 135]  # degrees
+    frequencies: [0.1, 0.25, 0.4]
+    sigma: 3.0
+    kernel_size: 21
+
+  # Color space analysis
+  color_space: "LAB"
+
+  # Face region extraction
+  face_padding: 0.2  # padding around detected face bbox
+
+  # Validation strictness levels
+  levels:
+    strict: 0.2
+    standard: 0.3
+    relaxed: 0.5

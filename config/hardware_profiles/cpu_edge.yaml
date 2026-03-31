@@ -1,0 +1,21 @@
+# EDEN OS — CPU Edge/Demo Profile (No GPU)
+hardware:
+  name: "CPU Edge/Demo"
+  gpu: "none"
+  vram_gb: 0
+
+pipeline:
+  target_fps: 15
+  max_latency_ms: 3000
+
+animator:
+  engine: "liveportrait"
+  target_fps: 15
+
+voice:
+  tts_primary: "kokoro"
+  asr_fallback: "base"
+
+brain:
+  primary: "anthropic"
+  fallback: "local"
